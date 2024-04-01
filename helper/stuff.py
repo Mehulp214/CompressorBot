@@ -56,7 +56,7 @@ async def ihelp(event):
 async def beck(event):
     ok = await event.client(GetFullUserRequest(event.sender_id))
     await event.edit(
-        f"Hi `{ok.user.first_name}`\nThis is A CompressorBot Which Can Encode Videos.\nReduce Size of Videos With Negligible Quality Change\nU can Generate Samples/screenshots too.",
+        f"Hi `{ok.first_name}`\nThis is A CompressorBot Which Can Encode Videos.\nReduce Size of Videos With Negligible Quality Change\nU can Generate Samples/screenshots too.",
         buttons=[
             [Button.inline("HELP", data="ihelp")],
             [
