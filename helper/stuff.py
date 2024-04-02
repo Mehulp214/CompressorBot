@@ -33,7 +33,7 @@ async def start(event):
         buttons=[
             [Button.inline("HELP", data="ihelp")],
             [
-                Button.url("SOURCE CODE", url="github.com/"),
+                Button.url("JOIN CHANNEL ", url="t.me/mehulbots"),
                 Button.url("DEVELOPER", url="t.me/Patil_Mehul2"),
             ],
         ],
