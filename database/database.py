@@ -4,7 +4,11 @@
 
 
 import pymongo, os
-from config import DB_URI, DB_NAME
+
+
+DB_NAME = "CMDS"
+
+MONGO_URI ="mongodb+srv://ifndsfsiodsf:Qwerty_1234@cluster0.s72qiof.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 
 dbclient = pymongo.MongoClient(DB_URI)
