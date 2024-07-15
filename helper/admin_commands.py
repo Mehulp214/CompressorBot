@@ -1,3 +1,8 @@
+from pyrogram import Client, filters
+
+
+ADMINS = []
+
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
     msg = await client.send_message(chat_id=message.chat.id, text=WAIT_MSG)
