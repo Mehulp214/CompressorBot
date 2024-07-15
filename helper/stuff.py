@@ -34,7 +34,7 @@ async def start(event):
             [Button.inline("HELP", data="ihelp")],
             [
                 Button.url("JOIN CHANNEL ", url="t.me/mehulbots"),
-                Button.url("DEVELOPER", url="t.me/Patil_Mehul2"),
+                Button.url("DEVELOPER", url="t.me/mehulsupportbot"),
             ],
         ],
     )
