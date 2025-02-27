@@ -23,7 +23,7 @@ try:
     API_HASH = "15e5e632a8a0e52251ac8c3ccbe462c7"
     BOT_TOKEN = "7160872230:AAHmmk7eDW2FwtVkRLwl3dwzJALR-qiS15Q"
     OWNER = 5642570692
-    LOG = -1002175816545
+    LOG = -1002493977004
     #LOG = -1001817380537
 except Exception as e:
     LOGS.info("Environment vars Missing")
@@ -32,32 +32,32 @@ except Exception as e:
     exit(1)
 
 
-from pyrogram import Client, filters
+# from pyrogram import Client, filters
 
-# Create the Pyrogram client (bot)
-app = Client("my_bot", api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+# # Create the Pyrogram client (bot)
+# app = Client("my_bot", api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
-# Function to generate and send an invite link for the specified channel
-@app.on_message(filters.command("link") & filters.private)
-async def force_subscription(client, message):
-    # Specify the channel ID (can be a username like "@channelname" or channel ID)
-    channel_id = LOG  # e.g., @example_channel or channel ID
+# # Function to generate and send an invite link for the specified channel
+# @app.on_message(filters.command("link") & filters.private)
+# async def force_subscription(client, message):
+#     # Specify the channel ID (can be a username like "@channelname" or channel ID)
+#     channel_id = LOG  # e.g., @example_channel or channel ID
 
-    try:
-        # Export the invite link for the channel
-        invite_link = await client.export_chat_invite_link(channel_id)
+#     try:
+#         # Export the invite link for the channel
+#         invite_link = await client.export_chat_invite_link(channel_id)
         
-        print(invite_link)
-    except Exception as e:
-        print(e)
+#         print(invite_link)
+#     except Exception as e:
+#         print(e)
 
 
-# Run the bot
-app.run()
+# # Run the bot
+# app.run()
 
 
-#try:
-    # APP_ID = config("APP_ID", cast=int)
+# #try:
+#     # APP_ID = config("APP_ID", cast=int)
     # API_HASH = config("API_HASH")
     # BOT_TOKEN = config("BOT_TOKEN")
     # OWNER = config("OWNER_ID", default=1322549723, cast=int)
