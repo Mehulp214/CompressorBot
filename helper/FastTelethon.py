@@ -392,12 +392,53 @@ async def download_file(
     return out
 
 
+# async def upload_file(
+#     client: TelegramClient,
+#     file: BinaryIO,
+#     name,
+#     progress_callback: callable = None,
+# ) -> TypeInputFile:
+#     global filename
+#     filename = name
+#     return (await _internal_transfer_to_telegram(client, file, progress_callback))[0]
+
+import time
+
 async def upload_file(
     client: TelegramClient,
     file: BinaryIO,
     name,
+    user_id: int,  # Add user ID to track uploads
     progress_callback: callable = None,
 ) -> TypeInputFile:
     global filename
     filename = name
-    return (await _internal_transfer_to_telegram(client, file, progress_callback))[0]
+    
+    # Check if user is in cooldown
+    last_upload_time = active_uploads.get(user_id, 0)
+    if time.time() - last_upload_time < 300:  # 300 seconds = 5 minutes
+        raise Exception("You must wait 5 minutes before uploading another file.")
+
+    # Check if another user is uploading
+    if len(active_uploads) > 0 and user_id not in active_uploads:
+        upload_queue[user_id].put_nowait((file, name, progress_callback))
+        return  # User is queued, return without uploading immediately
+
+    # Mark this user as currently uploading
+    active_uploads[user_id] = time.time()
+
+    try:
+        # Start file upload
+        uploaded_file = await _internal_transfer_to_telegram(client, file, progress_callback)
+
+    finally:
+        # Remove user from active uploads
+        del active_uploads[user_id]
+
+        # Check if there is a queued upload
+        if not upload_queue[user_id].empty():
+            next_file, next_name, next_callback = upload_queue[user_id].get_nowait()
+            await upload_file(client, next_file, next_name, user_id, next_callback)  # Process next file
+
+    return uploaded_file[0]
+
