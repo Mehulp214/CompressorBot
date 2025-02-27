@@ -13,6 +13,10 @@
 #    License can be found in < https://github.com/1Danish-00/CompressorBot/blob/main/License> .
 
 from . import *
+from pyrogram import Client, filters
+
+
+
 
 try:
     APP_ID = 13216322
@@ -26,6 +30,34 @@ except Exception as e:
     LOGS.info("something went wrong")
     LOGS.info(str(e))
     exit(1)
+
+
+from pyrogram import Client, filters
+
+# Create the Pyrogram client (bot)
+app = Client("my_bot", api_id=APP_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
+# Function to generate and send an invite link for the specified channel
+@app.on_message(filters.command("link") & filters.private)
+async def force_subscription(client, message):
+    # Specify the channel ID (can be a username like "@channelname" or channel ID)
+    channel_id = LOG  # e.g., @example_channel or channel ID
+
+    try:
+        # Export the invite link for the channel
+        invite_link = await client.export_chat_invite_link(channel_id)
+        
+        # Send the invite link to the user
+        await message.reply(f"Here is your join link for the channel: {invite_link}")
+
+    except Exception as e:
+        # Handle error if unable to get the invite link
+        await message.reply(f"An error occurred: {e}")
+
+
+
+# Run the bot
+app.run()
 
 
 #try:
