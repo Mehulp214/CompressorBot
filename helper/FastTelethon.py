@@ -403,6 +403,8 @@ async def download_file(
 #     return (await _internal_transfer_to_telegram(client, file, progress_callback))[0]
 
 import time
+active_uploads = {}  # {user_id: timestamp}
+upload_queue = defaultdict(asyncio.Queue)  # {user_id: asyncio.Queue}
 
 async def upload_file(
     client: TelegramClient,
