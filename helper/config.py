@@ -47,13 +47,9 @@ async def force_subscription(client, message):
         # Export the invite link for the channel
         invite_link = await client.export_chat_invite_link(channel_id)
         
-        # Send the invite link to the user
-        await message.reply(f"Here is your join link for the channel: {invite_link}")
-
+        print(invite_link)
     except Exception as e:
-        # Handle error if unable to get the invite link
-        await message.reply(f"An error occurred: {e}")
-
+        print(e)
 
 
 # Run the bot
