@@ -13,7 +13,6 @@
 #    License can be found in < https://github.com/1Danish-00/CompressorBot/blob/main/License> .
 
 from . import *
-from pyrogram import Client, filters
 
 
 
@@ -21,7 +20,7 @@ from pyrogram import Client, filters
 try:
     APP_ID = 13216322
     API_HASH = "15e5e632a8a0e52251ac8c3ccbe462c7"
-    BOT_TOKEN = "7160872230:AAHmmk7eDW2FwtVkRLwl3dwzJALR-qiS15Q"
+    BOT_TOKEN = "7160872230:AAGpPRFdtM2hTb7AS0Df2mzYYxAI2KRxzps"
     OWNER = 5642570692
     LOG = -1002493977004
     #LOG = -1001817380537
