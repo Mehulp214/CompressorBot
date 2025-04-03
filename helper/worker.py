@@ -15,6 +15,7 @@
 
 from .funcn import *
 from .FastTelethon import download_file, upload_file
+import os
 
 async def screenshot(e):
     await e.edit("`Generating Screenshots...`")
@@ -67,6 +68,7 @@ async def stats(e):
 
 async def encc(e):
     try:
+        thumb = os.path.join(os.path.dirname(__file__), "compressor_bot.jpg")
         es = dt.now()
         COUNT.append(e.chat_id)
         wah = e.pattern_match.group(1).decode("UTF-8")
