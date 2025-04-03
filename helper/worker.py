@@ -403,9 +403,12 @@ async def encod(event):
         hehe = f"{out};{dl};{thum};{dtime}"
         key = code(hehe)
         print("DONESTEP 6")
-        await xxx.delete()
-        inf = await info(dl, event)
-        COUNT.remove(user.id)
+        try:
+            await xxx.delete()
+            inf = await info(dl, event)
+            COUNT.remove(user.id)
+        except Exception as er:
+            print(er)
         print("HELLO4")
         await event.client.send_message(
             event.chat_id,
