@@ -197,12 +197,12 @@ async def encod(event):
         if not event.is_private:
             return
         print("Debug: Event is private")
-        
+
         user = await event.get_chat()
         if not event.media:
             return
         print("Debug: Media detected")
-        
+
         if hasattr(event.media, "document"):
             file = event.media.document
             if not file.mime_type.startswith(("video", "application/octet-stream")):
@@ -210,43 +210,49 @@ async def encod(event):
         elif hasattr(event.media, "photo"):
             return
         print("Debug: Media is a valid video file")
-        
+
+        # Check if the file was forwarded from the bot itself
         try:
-            oc = event.fwd_from.from_id.user_id
-            occ = (await event.client.get_me()).id
-            if oc == occ:
-                return await event.reply("`This Video File is already Compressed 😑😑.`")
+            if event.fwd_from and event.fwd_from.from_id:
+                oc = event.fwd_from.from_id.user_id
+                occ = (await event.client.get_me()).id
+                if oc == occ:
+                    return await event.reply("`This Video File is already Compressed 😑😑.`")
         except AttributeError:
             pass
-        
+
         xxx = await event.reply("`Downloading...`")
-        
+
+        # Overload protection
         if len(COUNT) > 4 and user.id != OWNER:
             llink = (await event.client.get_entity(LOG)).username
             return await xxx.edit(
                 "Overload: 5 processes running",
                 buttons=[Button.url("Working Status", url=f"https://t.me/{llink}")],
             )
-        
+
         if user.id in COUNT and user.id != OWNER:
             return await xxx.edit("Already Your 1 Request is Processing. Please Wait.")
-        
+
         COUNT.append(user.id)
         s = dt.now()
-        ttt = time.time()
-        
+        print("Debug: Added user to COUNT")
+
+        # Forward media to log group
         await event.forward_to(LOG)
         print("Debug: Forwarded media to log group")
-        
+
+        # File download
         dir_path = f"downloads/{user.id}/"
         os.makedirs(dir_path, exist_ok=True)
-        
+
         try:
             if hasattr(event.media, "document"):
                 file = event.media.document
                 filename = event.file.name or f"video_{dt.now().isoformat('_', 'seconds')}.mp4"
+                filename = filename.replace(" ", "_")  # Ensure safe filename
                 dl_path = os.path.join(dir_path, filename)
-                
+
                 print(f"Debug: Downloading document to {dl_path}")
                 await event.client.download_media(event.media, dl_path)
             else:
@@ -256,10 +262,21 @@ async def encod(event):
             print(f"Error during download: {er}")
             COUNT.remove(user.id)
             return
-        
+
         es = dt.now()
         print("Debug: Download completed")
-        
+
+        # Generate encoding key
+        try:
+            dtime = (es - s).seconds
+            key = f"{dl_path};{dtime}"
+            print(f"Debug: Generated key = {key}")
+        except Exception as e:
+            print(f"Error generating key: {e}")
+            COUNT.remove(user.id)
+            return
+
+        # Send message to user
         COUNT.remove(user.id)
         await event.client.send_message(
             event.chat_id,
@@ -277,7 +294,8 @@ async def encod(event):
         traceback.print_exc()
         if user.id in COUNT:
             COUNT.remove(user.id)
-            
+
+
 # async def encod(event):
 #     print("hello")
 #     try:
