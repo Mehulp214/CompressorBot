@@ -160,8 +160,10 @@ async def encc(e):
         )
 
         # Send message safely
-        await send_message_safe(e.client, e.chat_id, message_text)
-
+        try:
+            await send_message_safe(e.client, e.chat_id, message_text)
+        except Exception as er:
+            print(er)
         await ds.forward_to(LOG)
         COUNT.remove(e.chat_id)
         os.remove(dl)
