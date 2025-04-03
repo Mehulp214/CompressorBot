@@ -126,13 +126,19 @@ async def encc(e):
         xx = ts(int((ees - es).seconds) * 1000)
         xxx = ts(int((eees - ees).seconds) * 1000)
         print("UPLOAD DONE4")
-        a1 = await info(dl, e)
-        a2 = await info(out, e)
+        try:
+            a1 = await info(dl, e)
+            a2 = await info(out, e)
+        except Exception as eer:
+            print(eer)
         print("UPLOAD DONE5")
-        dk = await ds.reply(
-            f"Original Size : {hbs(org)}\nCompressed Size : {hbs(com)}\nCompressed Percentage : {per}\n\nMediainfo: [Before]({a1})//[After]({a2})\n\nDownloaded in {x}\nCompressed in {xx}\nUploaded in {xxx}",
-            link_preview=False,
-        )
+        try:
+            dk = await ds.reply(
+                f"Original Size : {hbs(org)}\nCompressed Size : {hbs(com)}\nCompressed Percentage : {per}\n\nMediainfo: [Before]({a1})//[After]({a2})\n\nDownloaded in {x}\nCompressed in {xx}\nUploaded in {xxx}",
+                link_preview=False,
+            )
+        except Exception as eer:
+            print(eer)
         print("UPLOAD DONE6")
         await ds.forward_to(LOG)
         await dk.forward_to(LOG)
