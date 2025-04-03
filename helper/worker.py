@@ -193,6 +193,7 @@ async def sample(e):
 
 
 async def encod(event):
+    print("hello")
     try:
         if not event.is_private:
             return
@@ -244,6 +245,7 @@ async def encod(event):
         if not os.path.isdir(dir):
             os.mkdir(dir)
         try:
+            print("hello2")
             if hasattr(event.media, "document"):
                 file = event.media.document
                 mime_type = file.mime_type
@@ -295,6 +297,7 @@ async def encod(event):
         await xxx.delete()
         inf = await info(dl, event)
         COUNT.remove(user.id)
+        print("HELLO4")
         await event.client.send_message(
             event.chat_id,
             f"🐠DOWNLODING COMPLETED!!🐠",
