@@ -99,6 +99,7 @@ async def encc(e):
         ttt = time.time()
         await nn.delete()
         nnn = await e.client.send_message(e.chat_id, "`Uploading...`")
+        print("UPLOAD DONE")
         with open(out, "rb") as f:
             ok = await upload_file(
                      client=e.client,
@@ -108,11 +109,13 @@ async def encc(e):
                          progress(d, t, nnn, ttt, "uploading..")
                          ),
                      )
+        print("UPLOAD DONE2")
         ds = await e.client.send_file(
             e.chat_id,
             file=ok,
             force_document=True,
             thumb=thum)
+        print("UPLOAD DONE3")
         await nnn.delete()
         org = int(Path(dl).stat().st_size)
         com = int(Path(out).stat().st_size)
@@ -122,17 +125,22 @@ async def encc(e):
         x = dtime
         xx = ts(int((ees - es).seconds) * 1000)
         xxx = ts(int((eees - ees).seconds) * 1000)
+        print("UPLOAD DONE4")
         a1 = await info(dl, e)
         a2 = await info(out, e)
+        print("UPLOAD DONE5")
         dk = await ds.reply(
             f"Original Size : {hbs(org)}\nCompressed Size : {hbs(com)}\nCompressed Percentage : {per}\n\nMediainfo: [Before]({a1})//[After]({a2})\n\nDownloaded in {x}\nCompressed in {xx}\nUploaded in {xxx}",
             link_preview=False,
         )
+        print("UPLOAD DONE6")
         await ds.forward_to(LOG)
         await dk.forward_to(LOG)
         COUNT.remove(e.chat_id)
+        print("UPLOAD DONE7")
         os.remove(dl)
         os.remove(out)
+        print("UPLOAD DONE8")
     except Exception as er:
         LOGS.info(er)
         return COUNT.remove(e.chat_id)
