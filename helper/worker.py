@@ -409,6 +409,7 @@ async def encod(event):
             COUNT.remove(user.id)
         except Exception as er:
             print(er)
+            inf="https://github.com"
         print("HELLO4")
         await event.client.send_message(
             event.chat_id,
