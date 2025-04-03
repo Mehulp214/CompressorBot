@@ -68,7 +68,7 @@ async def stats(e):
 
 async def encc(e):
     try:
-        thumb = os.path.join(os.path.dirname(__file__), "compressor_bot.jpg")
+        thumb = os.path.join(os.path.dirname(__file__), "compressor_robot.jpg")
         es = dt.now()
         COUNT.append(e.chat_id)
         wah = e.pattern_match.group(1).decode("UTF-8")
