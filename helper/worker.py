@@ -65,6 +65,16 @@ async def stats(e):
     except BaseException:
         await e.answer("Someting Went Wrong 🤔\nResend Media", cache_time=0, alert=True)
 
+async def send_message_safe(client, chat_id, text):
+    """Helper function to send messages safely by splitting if too long"""
+    max_length = 4000  # Keep some buffer under 4096
+    if len(text) > max_length:
+        parts = [text[i:i + max_length] for i in range(0, len(text), max_length)]
+        for part in parts:
+            await client.send_message(chat_id, part, link_preview=False)
+    else:
+        await client.send_message(chat_id, text, link_preview=False)
+
 async def encc(e):
     try:
         thumb = os.path.join(os.path.dirname(__file__), "compressor_robot.jpg")
@@ -138,22 +148,21 @@ async def encc(e):
         except Exception as eer:
             LOGS.info(f"Error fetching info for compressed file: {eer}")
 
-        # Ensure dk is always defined
-        dk = None
-        try:
-            dk = await ds.reply(
-                f"Original Size : {hbs(org)}\nCompressed Size : {hbs(com)}\nCompressed Percentage : {per}\n\n"
-                f"Mediainfo: [Before]({a1})//[After]({a2})\n\n"
-                f"Downloaded in {x}\nCompressed in {xx}\nUploaded in {xxx}",
-                link_preview=False,
-            )
-        except Exception as eer:
-            LOGS.info(f"Error sending compression summary: {eer}")
+        # Generate message safely
+        message_text = (
+            f"Original Size : {hbs(org)}\n"
+            f"Compressed Size : {hbs(com)}\n"
+            f"Compressed Percentage : {per}\n\n"
+            f"Mediainfo: [Before]({a1})//[After]({a2})\n\n"
+            f"Downloaded in {x}\n"
+            f"Compressed in {xx}\n"
+            f"Uploaded in {xxx}"
+        )
+
+        # Send message safely
+        await send_message_safe(e.client, e.chat_id, message_text)
 
         await ds.forward_to(LOG)
-        if dk:  # Ensure dk is valid before forwarding
-            await dk.forward_to(LOG)
-
         COUNT.remove(e.chat_id)
         os.remove(dl)
         os.remove(out)
@@ -162,6 +171,7 @@ async def encc(e):
         LOGS.info(er)
         if e.chat_id in COUNT:
             COUNT.remove(e.chat_id)
+
 
 
 # async def encc(e):
