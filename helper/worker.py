@@ -65,15 +65,9 @@ async def stats(e):
     except BaseException:
         await e.answer("Someting Went Wrong 🤔\nResend Media", cache_time=0, alert=True)
 
-async def send_message_safe(client, chat_id, text):
-    """Helper function to send messages safely by splitting if too long"""
-    max_length = 4000  # Keep some buffer under 4096
-    if len(text) > max_length:
-        parts = [text[i:i + max_length] for i in range(0, len(text), max_length)]
-        for part in parts:
-            await client.send_message(chat_id, part, link_preview=False)
-    else:
-        await client.send_message(chat_id, text, link_preview=False)
+
+
+
 
 async def encc(e):
     try:
@@ -96,36 +90,35 @@ async def encc(e):
         )
         stdout, stderr = await process.communicate()
         er = stderr.decode()
-        if er:
-            await e.edit(str(er) + "\n\n**ERROR** Contact @Patil_Mehul")
-            COUNT.remove(e.chat_id)
-            os.remove(dl)
-            os.remove(out)
-            return
-        
+        try:
+            if er:
+                await e.edit(str(er) + "\n\n**ERROR** Contact @Patil_Mehul")
+                COUNT.remove(e.chat_id)
+                os.remove(dl)
+                return os.remove(out)
+        except BaseException:
+            pass
         ees = dt.now()
         ttt = time.time()
         await nn.delete()
         nnn = await e.client.send_message(e.chat_id, "`Uploading...`")
-
-        # Upload file
+        print("UPLOAD DONE")
         with open(out, "rb") as f:
             ok = await upload_file(
-                client=e.client,
-                file=f,
-                name=out,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, nnn, ttt, "uploading..")
-                ),
-            )
-
+                     client=e.client,
+                     file=f,
+                     name=out,
+                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                         progress(d, t, nnn, ttt, "uploading..")
+                         ),
+                     )
+        print("UPLOAD DONE2")
         ds = await e.client.send_file(
             e.chat_id,
             file=ok,
             force_document=True,
-            thumb=thum
-        )
-
+            thumb=thum)
+        print("UPLOAD DONE3")
         await nnn.delete()
         org = int(Path(dl).stat().st_size)
         com = int(Path(out).stat().st_size)
@@ -135,131 +128,31 @@ async def encc(e):
         x = dtime
         xx = ts(int((ees - es).seconds) * 1000)
         xxx = ts(int((eees - ees).seconds) * 1000)
-
-        # Ensure a1, a2 are always defined
-        a1, a2 = "N/A", "N/A"
+        print("UPLOAD DONE4")
         try:
             a1 = await info(dl, e)
-        except Exception as eer:
-            LOGS.info(f"Error fetching info for original file: {eer}")
-
-        try:
             a2 = await info(out, e)
         except Exception as eer:
-            LOGS.info(f"Error fetching info for compressed file: {eer}")
-
-        # Generate message safely
-        message_text = (
-            f"Original Size : {hbs(org)}\n"
-            f"Compressed Size : {hbs(com)}\n"
-            f"Compressed Percentage : {per}\n\n"
-            f"Mediainfo: [Before]({a1})//[After]({a2})\n\n"
-            f"Downloaded in {x}\n"
-            f"Compressed in {xx}\n"
-            f"Uploaded in {xxx}"
-        )
-
-        # Send message safely
+            print(eer)
+        print("UPLOAD DONE5")
         try:
-            await send_message_safe(e.client, e.chat_id, message_text)
-        except Exception as er:
-            print(er)
-        await ds.forward_to(LOG)
+            dk = await ds.reply(
+                f"Original Size : {hbs(org)}\nCompressed Size : {hbs(com)}\nCompressed Percentage : {per}\n\nMediainfo: [Before]({a1})//[After]({a2})\n\nDownloaded in {x}\nCompressed in {xx}\nUploaded in {xxx}",
+                link_preview=False,
+            )
+        except Exception as eer:
+            print(eer)
         COUNT.remove(e.chat_id)
+        print("UPLOAD DONE6")
+        await ds.forward_to(LOG)
+        await dk.forward_to(LOG)
+        print("UPLOAD DONE7")
         os.remove(dl)
         os.remove(out)
-
+        print("UPLOAD DONE8")
     except Exception as er:
         LOGS.info(er)
-        if e.chat_id in COUNT:
-            COUNT.remove(e.chat_id)
-
-
-
-# async def encc(e):
-#     try:
-#         thumb = os.path.join(os.path.dirname(__file__), "compressor_robot.jpg")
-#         es = dt.now()
-#         COUNT.append(e.chat_id)
-#         wah = e.pattern_match.group(1).decode("UTF-8")
-#         wh = decode(wah)
-#         out, dl, thum, dtime = wh.split(";")
-#         nn = await e.edit(
-#             "`Compressing..`",
-#             buttons=[
-#                 [Button.inline("STATS", data=f"stats{wah}")],
-#                 [Button.inline("CANCEL PROCESS", data=f"skip{wah}")],
-#             ],
-#         )
-#         cmd = f'ffmpeg -i "{dl}" -preset ultrafast -c:v libx265 -crf 27 -map 0:v -c:a aac -map 0:a -c:s copy -map 0:s? "{out}" -y'
-#         process = await asyncio.create_subprocess_shell(
-#             cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-#         )
-#         stdout, stderr = await process.communicate()
-#         er = stderr.decode()
-#         try:
-#             if er:
-#                 await e.edit(str(er) + "\n\n**ERROR** Contact @Patil_Mehul")
-#                 COUNT.remove(e.chat_id)
-#                 os.remove(dl)
-#                 return os.remove(out)
-#         except BaseException:
-#             pass
-#         ees = dt.now()
-#         ttt = time.time()
-#         await nn.delete()
-#         nnn = await e.client.send_message(e.chat_id, "`Uploading...`")
-#         print("UPLOAD DONE")
-#         with open(out, "rb") as f:
-#             ok = await upload_file(
-#                      client=e.client,
-#                      file=f,
-#                      name=out,
-#                      progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-#                          progress(d, t, nnn, ttt, "uploading..")
-#                          ),
-#                      )
-#         print("UPLOAD DONE2")
-#         ds = await e.client.send_file(
-#             e.chat_id,
-#             file=ok,
-#             force_document=True,
-#             thumb=thum)
-#         print("UPLOAD DONE3")
-#         await nnn.delete()
-#         org = int(Path(dl).stat().st_size)
-#         com = int(Path(out).stat().st_size)
-#         pe = 100 - ((com / org) * 100)
-#         per = str(f"{pe:.2f}") + "%"
-#         eees = dt.now()
-#         x = dtime
-#         xx = ts(int((ees - es).seconds) * 1000)
-#         xxx = ts(int((eees - ees).seconds) * 1000)
-#         print("UPLOAD DONE4")
-#         try:
-#             a1 = await info(dl, e)
-#             a2 = await info(out, e)
-#         except Exception as eer:
-#             print(eer)
-#         print("UPLOAD DONE5")
-#         try:
-#             dk = await ds.reply(
-#                 f"Original Size : {hbs(org)}\nCompressed Size : {hbs(com)}\nCompressed Percentage : {per}\n\nMediainfo: [Before]({a1})//[After]({a2})\n\nDownloaded in {x}\nCompressed in {xx}\nUploaded in {xxx}",
-#                 link_preview=False,
-#             )
-#         except Exception as eer:
-#             print(eer)
-#         print("UPLOAD DONE6")
-#         await ds.forward_to(LOG)
-#         await dk.forward_to(LOG)
-#         COUNT.remove(e.chat_id)
-#         print("UPLOAD DONE7")
-#         os.remove(dl)
-#         os.remove(out)
-#         print("UPLOAD DONE8")
-#     except Exception as er:
-#         LOGS.info(er)
-#         return COUNT.remove(e.chat_id)
+        return COUNT.remove(e.chat_id)
 
 
 async def sample(e):
