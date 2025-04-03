@@ -191,232 +191,237 @@ async def sample(e):
         os.remove(out)
         return
 
-async def encod(event):
-    print("hello")
-    try:
-        if not event.is_private:
-            return
-        print("Debug: Event is private")
-
-        user = await event.get_chat()
-        if not event.media:
-            return
-        print("Debug: Media detected")
-
-        if hasattr(event.media, "document"):
-            file = event.media.document
-            if not file.mime_type.startswith(("video", "application/octet-stream")):
-                return
-        elif hasattr(event.media, "photo"):
-            return
-        print("Debug: Media is a valid video file")
-
-        # Check if the file was forwarded from the bot itself
-        try:
-            if event.fwd_from and event.fwd_from.from_id:
-                oc = event.fwd_from.from_id.user_id
-                occ = (await event.client.get_me()).id
-                if oc == occ:
-                    return await event.reply("`This Video File is already Compressed 😑😑.`")
-        except AttributeError:
-            pass
-
-        xxx = await event.reply("`Downloading...`")
-
-        # Overload protection
-        if len(COUNT) > 4 and user.id != OWNER:
-            llink = (await event.client.get_entity(LOG)).username
-            return await xxx.edit(
-                "Overload: 5 processes running",
-                buttons=[Button.url("Working Status", url=f"https://t.me/{llink}")],
-            )
-
-        if user.id in COUNT and user.id != OWNER:
-            return await xxx.edit("Already Your 1 Request is Processing. Please Wait.")
-
-        COUNT.append(user.id)
-        s = dt.now()
-        print("Debug: Added user to COUNT")
-
-        # Forward media to log group
-        await event.forward_to(LOG)
-        print("Debug: Forwarded media to log group")
-
-        # File download
-        dir_path = f"downloads/{user.id}/"
-        os.makedirs(dir_path, exist_ok=True)
-
-        try:
-            if hasattr(event.media, "document"):
-                file = event.media.document
-                filename = event.file.name or f"video_{dt.now().isoformat('_', 'seconds')}.mp4"
-                filename = filename.replace(" ", "_")  # Ensure safe filename
-                dl_path = os.path.join(dir_path, filename)
-
-                print(f"Debug: Downloading document to {dl_path}")
-                await event.client.download_media(event.media, dl_path)
-            else:
-                dl_path = await event.client.download_media(event.media, dir_path)
-                print(f"Debug: Downloaded media to {dl_path}")
-        except Exception as er:
-            print(f"Error during download: {er}")
-            COUNT.remove(user.id)
-            return
-
-        es = dt.now()
-        print("Debug: Download completed")
-
-        # Generate encoding key
-        try:
-            dtime = (es - s).seconds
-            key = f"{dl_path};{dtime}"
-            print(f"Debug: Generated key = {key}")
-        except Exception as e:
-            print(f"Error generating key: {e}")
-            COUNT.remove(user.id)
-            return
-
-        # Send message to user
-        COUNT.remove(user.id)
-        await event.client.send_message(
-            event.chat_id,
-            "🐠 DOWNLOADING COMPLETED!! 🐠",
-            buttons=[
-                [Button.inline("GENERATE SAMPLE", data=f"gsmpl{key}")],
-                [Button.inline("SCREENSHOTS", data=f"sshot{key}")],
-                [Button.inline("COMPRESS", data=f"sencc{key}")],
-            ],
-        )
-        print("Debug: Message sent to user")
-    except Exception as er:
-        print(f"Error in main function: {er}")
-        import traceback
-        traceback.print_exc()
-        if user.id in COUNT:
-            COUNT.remove(user.id)
-
-
 # async def encod(event):
 #     print("hello")
 #     try:
 #         if not event.is_private:
 #             return
+#         print("Debug: Event is private")
+
 #         user = await event.get_chat()
 #         if not event.media:
 #             return
+#         print("Debug: Media detected")
+
 #         if hasattr(event.media, "document"):
-#             if not event.media.document.mime_type.startswith(("video","application/octet-stream")):
+#             file = event.media.document
+#             if not file.mime_type.startswith(("video", "application/octet-stream")):
 #                 return
 #         elif hasattr(event.media, "photo"):
 #             return
+#         print("Debug: Media is a valid video file")
+
+#         # Check if the file was forwarded from the bot itself
 #         try:
-#             oc = event.fwd_from.from_id.user_id
-#             occ = (await event.client.get_me()).id
-#             if oc == occ:
-#                 return await event.reply("`This Video File is already Compressed 😑😑.`")
-#         except BaseException:
+#             if event.fwd_from and event.fwd_from.from_id:
+#                 oc = event.fwd_from.from_id.user_id
+#                 occ = (await event.client.get_me()).id
+#                 if oc == occ:
+#                     return await event.reply("`This Video File is already Compressed 😑😑.`")
+#         except AttributeError:
 #             pass
+
 #         xxx = await event.reply("`Downloading...`")
-#         """ For Force Subscribe Channel"""
-#         # pp = []
-#         # async for x in event.client.iter_participants("put group username"):
-#         #    pp.append(x.id)
-#         # if (user.id) not in pp:
-#         #    return await xxx.edit(
-#         #        "U Must Subscribe This Channel To Use This Bot",
-#         #       buttons=[Button.url("JOIN CHANNEL", url="put group link")],
-#         #   )
+
+#         # Overload protection
 #         if len(COUNT) > 4 and user.id != OWNER:
-#             llink = (await event.client(cl(LOG))).link
+#             llink = (await event.client.get_entity(LOG)).username
 #             return await xxx.edit(
-#                 "Overload Already 5 Process Running",
-#                 buttons=[Button.url("Working Status", url=llink)],
+#                 "Overload: 5 processes running",
+#                 buttons=[Button.url("Working Status", url=f"https://t.me/{llink}")],
 #             )
+
 #         if user.id in COUNT and user.id != OWNER:
-#             return await xxx.edit(
-#                 "Already Your 1 Request Processing\nKindly Wait For it to Finish"
-#             )
+#             return await xxx.edit("Already Your 1 Request is Processing. Please Wait.")
+
 #         COUNT.append(user.id)
 #         s = dt.now()
-#         ttt = time.time()
+#         print("Debug: Added user to COUNT")
+
+#         # Forward media to log group
 #         await event.forward_to(LOG)
-#         gg = await event.client.get_entity(user.id)
-#         name = f"[{get_display_name(gg)}](tg://user?id={user.id})"
-#         await event.client.send_message(
-#             LOG, f"{len(COUNT)} Downloading Started for user - {name}"
-#         )
-#         dir = f"downloads/{user.id}/"
-#         if not os.path.isdir(dir):
-#             os.mkdir(dir)
+#         print("Debug: Forwarded media to log group")
+
+#         # File download
+#         dir_path = f"downloads/{user.id}/"
+#         os.makedirs(dir_path, exist_ok=True)
+
 #         try:
-#             print("hello2")
 #             if hasattr(event.media, "document"):
 #                 file = event.media.document
-#                 mime_type = file.mime_type
-#                 filename = event.file.name
-#                 if not filename:
-#                     filename = (
-#                             "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
-#                     )
-#                 dl = dir + filename
-#                 with open(dl, "wb") as f:
-#                      ok = await download_file(
-#                         client=event.client,
-#                         location=file,
-#                         out=f,
-#                         progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-#                             progress(
-#                                 d,
-#                                 t,
-#                                 xxx,
-#                                 ttt,
-#                                 "Downloading",
-#                             )
-#                         ),
-#                     )
+#                 filename = event.file.name or f"video_{dt.now().isoformat('_', 'seconds')}.mp4"
+#                 filename = filename.replace(" ", "_")  # Ensure safe filename
+#                 dl_path = os.path.join(dir_path, filename)
+
+#                 print(f"Debug: Downloading document to {dl_path}")
+#                 await event.client.download_media(event.media, dl_path)
 #             else:
-#                 dl = await event.client.download_media(
-#                     event.media,
-#                     dir,
-#                     progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-#                         progress(d, t, xxx, ttt, "Downloading")
-#                     ),
-#                 )
+#                 dl_path = await event.client.download_media(event.media, dir_path)
+#                 print(f"Debug: Downloaded media to {dl_path}")
 #         except Exception as er:
-#             LOGS.info(er)
+#             print(f"Error during download: {er}")
 #             COUNT.remove(user.id)
-#             return os.remove(dl)
+#             return
+
 #         es = dt.now()
-#         kk = dl.split("/")[-1]
-#         aa = kk.split(".")[-1]
-#         rr = f"encode/{user.id}"
-#         if not os.path.isdir(rr):
-#             os.mkdir(rr)
-#         bb = kk.replace(f".{aa}", " compressed.mkv")
-#         out = f"{rr}/{bb}"
-#         thum = "thumb.jpg"
-#         dtime = ts(int((es - s).seconds) * 1000)
-#         hehe = f"{out};{dl};{thum};{dtime}"
-#         key = code(hehe)
-#         await xxx.delete()
-#         inf = await info(dl, event)
+#         print("Debug: Download completed")
+
+#         # Generate encoding key
+#         try:
+#             dtime = (es - s).seconds
+#             key = f"{dl_path};{dtime}"
+#             print(f"Debug: Generated key = {key}")
+#         except Exception as e:
+#             print(f"Error generating key: {e}")
+#             COUNT.remove(user.id)
+#             return
+
+#         # Send message to user
 #         COUNT.remove(user.id)
-#         print("HELLO4")
 #         await event.client.send_message(
 #             event.chat_id,
-#             f"🐠DOWNLODING COMPLETED!!🐠",
+#             "🐠 DOWNLOADING COMPLETED!! 🐠",
 #             buttons=[
-#                 [
-#                     Button.inline("GENERATE SAMPLE", data=f"gsmpl{key}"),
-#                     Button.inline("SCREENSHOTS", data=f"sshot{key}"),
-#                 ],
-#                 [Button.url("MEDIAINFO", url=inf)],
+#                 [Button.inline("GENERATE SAMPLE", data=f"gsmpl{key}")],
+#                 [Button.inline("SCREENSHOTS", data=f"sshot{key}")],
 #                 [Button.inline("COMPRESS", data=f"sencc{key}")],
 #             ],
 #         )
-#     except BaseException as er:
-#         LOGS.info(er)
-#         return COUNT.remove(user.id)
+#         print("Debug: Message sent to user")
+#     except Exception as er:
+#         print(f"Error in main function: {er}")
+#         import traceback
+#         traceback.print_exc()
+#         if user.id in COUNT:
+#             COUNT.remove(user.id)
+
+
+async def encod(event):
+    print("hello")
+    try:
+        if not event.is_private:
+            return
+        user = await event.get_chat()
+        if not event.media:
+            return
+        if hasattr(event.media, "document"):
+            if not event.media.document.mime_type.startswith(("video","application/octet-stream")):
+                return
+        elif hasattr(event.media, "photo"):
+            return
+        try:
+            oc = event.fwd_from.from_id.user_id
+            occ = (await event.client.get_me()).id
+            if oc == occ:
+                return await event.reply("`This Video File is already Compressed 😑😑.`")
+        except BaseException:
+            pass
+        xxx = await event.reply("`Downloading...`")
+        """ For Force Subscribe Channel"""
+        # pp = []
+        # async for x in event.client.iter_participants("put group username"):
+        #    pp.append(x.id)
+        # if (user.id) not in pp:
+        #    return await xxx.edit(
+        #        "U Must Subscribe This Channel To Use This Bot",
+        #       buttons=[Button.url("JOIN CHANNEL", url="put group link")],
+        #   )
+        if len(COUNT) > 4 and user.id != OWNER:
+            llink = (await event.client(cl(LOG))).link
+            return await xxx.edit(
+                "Overload Already 5 Process Running",
+                buttons=[Button.url("Working Status", url=llink)],
+            )
+        if user.id in COUNT and user.id != OWNER:
+            return await xxx.edit(
+                "Already Your 1 Request Processing\nKindly Wait For it to Finish"
+            )
+        COUNT.append(user.id)
+        s = dt.now()
+        ttt = time.time()
+        await event.forward_to(LOG)
+        gg = await event.client.get_entity(user.id)
+        name = f"[{get_display_name(gg)}](tg://user?id={user.id})"
+        await event.client.send_message(
+            LOG, f"{len(COUNT)} Downloading Started for user - {name}"
+        )
+        dir = f"downloads/{user.id}/"
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
+        try:
+            print("hello2")
+            if hasattr(event.media, "document"):
+                file = event.media.document
+                mime_type = file.mime_type
+                filename = event.file.name
+                if not filename:
+                    filename = (
+                            "video_" + dt.now().isoformat("_", "seconds") + ".mp4"
+                    )
+                dl = dir + filename
+                with open(dl, "wb") as f:
+                     ok = await download_file(
+                        client=event.client,
+                        location=file,
+                        out=f,
+                        progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                            progress(
+                                d,
+                                t,
+                                xxx,
+                                ttt,
+                                "Downloading",
+                            )
+                        ),
+                    )
+            else:
+                dl = await event.client.download_media(
+                    event.media,
+                    dir,
+                    progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
+                        progress(d, t, xxx, ttt, "Downloading")
+                    ),
+                )
+        except Exception as er:
+            LOGS.info(er)
+            COUNT.remove(user.id)
+            return os.remove(dl)
+        print("DONE STEP")
+        es = dt.now()
+        kk = dl.split("/")[-1]
+        aa = kk.split(".")[-1]
+        rr = f"encode/{user.id}"
+        print("DONE STEP2")
+        if not os.path.isdir(rr):
+            os.mkdir(rr)
+        bb = kk.replace(f".{aa}", " compressed.mkv")
+        print("DDONE SSTEP3")
+        out = f"{rr}/{bb}"
+        thum = "thumb.jpg"
+        print("DONE step5")
+        dtime = ts(int((es - s).seconds) * 1000)
+        hehe = f"{out};{dl};{thum};{dtime}"
+        key = code(hehe)
+        print("DONESTEP 6")
+        await xxx.delete()
+        inf = await info(dl, event)
+        COUNT.remove(user.id)
+        print("HELLO4")
+        await event.client.send_message(
+            event.chat_id,
+            f"🐠DOWNLODING COMPLETED!!🐠",
+            buttons=[
+                [
+                    Button.inline("GENERATE SAMPLE", data=f"gsmpl{key}"),
+                    Button.inline("SCREENSHOTS", data=f"sshot{key}"),
+                ],
+                [Button.url("MEDIAINFO", url=inf)],
+                [Button.inline("COMPRESS", data=f"sencc{key}")],
+            ],
+        )
+    except BaseException as er:
+        LOGS.info(er)
+        return COUNT.remove(user.id)
 
 
 async def customenc(e, key):
