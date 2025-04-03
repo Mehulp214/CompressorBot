@@ -265,9 +265,9 @@ async def encod(event):
             event.chat_id,
             "🐠 DOWNLOADING COMPLETED!! 🐠",
             buttons=[
-                [Button.inline("GENERATE SAMPLE", data="gsmpl")],
-                [Button.inline("SCREENSHOTS", data="sshot")],
-                [Button.inline("COMPRESS", data="sencc")],
+                [Button.inline("GENERATE SAMPLE", data=f"gsmpl{key}")],
+                [Button.inline("SCREENSHOTS", data=f"sshot{key}")],
+                [Button.inline("COMPRESS", data=f"sencc{key}")],
             ],
         )
         print("Debug: Message sent to user")
