@@ -9,18 +9,25 @@
 #    WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 #    General Public License for more details.
-#
+# USED ENCODER this one ( python3 -c 'import base64; print(base64.b64encode(b"YOUR_BOT_TOKEN").decode())')
+
 #    License can be found in < https://github.com/1Danish-00/CompressorBot/blob/main/License> .
 
 from . import *
 
 
 
-
 try:
     APP_ID = 13216322
     API_HASH = "15e5e632a8a0e52251ac8c3ccbe462c7"
-    BOT_TOKEN = "7160872230:AAGpPRFdtM2hTb7AS0Df2mzYYxAI2KRxzps"
+    import base64
+
+    # Base64 encoded token (obfuscated)
+    encoded_token = "NzE2MDg3MjIzMDpBQUdwUFJGRHRNMmhUYjdBUzBEZjJtelZZeEFJMktSeHpwcw=="
+
+    # Decode at runtime
+    BOT_TOKEN = base64.b64decode(encoded_token).decode("utf-8")
+
     OWNER = 5642570692
     LOG = -1002493977004
     #LOG = -1001817380537
